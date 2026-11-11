@@ -1067,7 +1067,8 @@ static void oot_update_player_cheats(Ctx *c, uint64_t actor, uint64_t components
             desired[2] = rz * right - rx * forward;
         }
         const float length = sqrtf(desired[0] * desired[0] + desired[1] * desired[1] + desired[2] * desired[2]);
-        const float speed = 4.0f / fmaxf(1.0f, length);
+        // (4 m/s, times the Debug tab's Movement speed: flight moves Link itself, not through the speed the game sets)
+        const float speed = 4.0f * (__atomic_load_n(&oot_speed_percent, __ATOMIC_RELAXED) / 100.0f) / fmaxf(1.0f, length);
         const float blend = 1.0f - expf(-12.0f * dt);
         for (unsigned i = 0; i < 3; i++) {
             velocity[i] += (desired[i] * speed - velocity[i]) * blend;
